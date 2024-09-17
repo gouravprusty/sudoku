@@ -22,13 +22,13 @@
 
     <div class="main">
         <div class="screen">
-            <div class="start_screen">
+            <div class="start_screen active">
                 <input type="text" class="input_name" placeholder="Your name" maxlength="11">
                 <div class="btn" id="btn_level">Easy</div>
                 <div class="btn" id="btn_continue">Continue</div>
                 <div class="btn btn_blue" id="btn_play">New Game</div>
             </div>
-            <div class="main_game active">
+            <div class="main_game">
                 <div class="main_sudoku_grid">
                     <div class="main_grid_cell"></div>
                     <div class="main_grid_cell"></div>
@@ -111,6 +111,32 @@
                     <div class="main_grid_cell"></div>
                     <div class="main_grid_cell"></div>
                     <div class="main_grid_cell"></div>
+                </div>
+                <div class="main_game_info">
+                    <div class="main_game_info_box main_game_info_name">
+                        <span id="player_name">Gourav</span>
+                    </div>
+                    <div class="main_game_info_box main_game_info_level">
+                        <span id="game_level">easy</span>
+                    </div>
+                </div>
+                <div class="main_game_info_box main_game_info_time">
+                    <span id="game_time">10:20</span>
+                    <div class="pause_btn">
+                        <i class="fa-solid fa-pause"></i>
+                    </div>
+                </div>
+                <div class="numbers">
+                    <div class="number">1</div>
+                    <div class="number">2</div>
+                    <div class="number">3</div>
+                    <div class="number">4</div>
+                    <div class="number">5</div>
+                    <div class="number">6</div>
+                    <div class="number">7</div>
+                    <div class="number">8</div>
+                    <div class="number">9</div>
+                    <div class="number delete_btn"><i class="fa-solid fa-delete-left"></i></div>
                 </div>
             </div>
         </div>

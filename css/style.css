@@ -189,3 +189,82 @@ nav{
     font-size: var(--font-size);
     cursor: pointer;
 }
+.main_grid_cell.filled{
+    background-color: var(--filled-bg);
+    color: var(--filled-color);
+}
+.main_grid_cell.selected{
+    background-color: var(--blue);
+    color: var(--white);
+}
+.main_grid_cell:hover{
+    border: 2px solid var(--blue);
+}
+.main_grid_cell.hover{
+    border: 3px solid var(--blue);
+}
+.dark.main_grid_cell.hover{
+    border: 1px solid var(--blue);
+}
+.main_grid_cell.err{
+    background-color: var(--red);
+    color: var(--white);
+}
+.main_game_info{
+    margin-top: var(--space-y);
+    margin-bottom: 10px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+.main_game_info_box{
+    height: 45px;
+    background-color: var(--main-bg);
+    color: var(--text-color);
+    border-radius: var(--border-radius);
+    display: grid;
+    place-items: center;
+    padding: 0 20px;
+    font-size: var(--font-size);
+}
+.main_game_info_time{
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    padding-left: 2rem;
+    margin-bottom: auto;
+}
+.pause_btn{
+    position: absolute;
+    right: 10px;
+    height: 30px;
+    width: 30px;
+    border-radius: var(--border-radius);
+    background-color: var(--blue);
+    color: var(--white);
+    font-size: var(--font-size);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+}
+.numbers{
+    margin-top: var(--space-y);
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 5px;
+}
+.number{
+    height: var(--cell-size);
+    border-radius: var(--border-radius);
+    background-color: var(--main-bg);
+    color: var(--text-color);
+    display: grid;
+    place-items: center;
+    font-size: var(--font-size);
+    cursor: pointer;
+}
+.delete_btn{
+    background-color: var(--red);
+    border-radius: var(--border-radius);
+    color: var(--white);
+}

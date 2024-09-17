@@ -1,11 +1,23 @@
 const body = document.querySelector("body");
+// Themes
 const toggleTheme = document.querySelector("#dark_mode_toggle");
 const themeColor = document.querySelector("meta[name='theme-color']");
+// Buttons
 const continueBtn = document.querySelector("#btn_continue");
-const playerName = document.querySelector(".input_name");
-const startScreen = document.querySelector(".start_screen");
 const playBtn = document.querySelector("#btn_play");
 const levelBtn = document.querySelector("#btn_level");
+// Inputs
+const playerName = document.querySelector(".input_name");
+// Screens
+const startScreen = document.querySelector(".start_screen");
+const gameScreen = document.querySelector(".main_game");
+// Components
+const cells = document.querySelectorAll(".main_grid_cell");
+const player_name = document.querySelector("#player_name");
+const game_level = document.querySelector("#game_level");
+const game_time = document.querySelector("#game_time");
+
+let timer = null;
 
 // Toggle dark mode on button click
 toggleTheme.addEventListener("click", () => {
@@ -33,9 +45,25 @@ levelBtn.addEventListener("click", (e) => {
     e.target.innerHTML = CONSTANT.LEVEL_NAME[levelIndex];
 });
 
+const setPlayerName = (name) => localStorage.setItem("player_name", name);
+const getPlayerName = () => localStorage.getItem("player_name")
+
+const startGame = () => {
+    startScreen.classList.remove("active");
+    gameScreen.classList.add("active");
+    player_name.innerText = playerName.value.trim();
+    setPlayerName(playerName.value.trim());
+    timer = setInterval(() => {
+        if(!pause){
+            seconds = seconds + 1
+            game_time.innerHTML = showTime(seconds);
+        }
+    }, 1000);
+};
+
 playBtn.addEventListener("click", () => {
     if(playerName.value.trim().length > 0){
-        alert(`Level = ${level}`);
+        startGame();
     }else{
         playerName.classList.add("input_err");
         setTimeout(() => {
@@ -48,7 +76,18 @@ playBtn.addEventListener("click", () => {
 // Initialize theme on page load
 const getGameInfo = () => JSON.parse(localStorage.getItem("game"));
 
-const init = () => {
+const initGameGrid = () => {
+    let index = 0;
+    for(let i = 0; i < Math.pow(CONSTANT.GRID_SIZE,2); i++){
+        let row = Math.floor(i/CONSTANT.GRID_SIZE);
+        let col = i % CONSTANT.GRID_SIZE;
+        if(row === 2 || row === 5) cells[index].style.marginBottom = "10px";
+        if(col === 2 || col === 5) cells[index].style.marginRight = "10px";
+        index++;
+    }
+};
+
+function init() {
     const darkmode = JSON.parse(localStorage.getItem("darkmode"));
     if (darkmode) {
         body.classList.add("dark");
@@ -59,5 +98,7 @@ const init = () => {
     }
     const game = getGameInfo();
     continueBtn.style.display = game ? "grid" : "none";
-};
+
+    initGameGrid();
+}
 init();
