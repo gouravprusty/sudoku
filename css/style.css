@@ -345,5 +345,9 @@ nav{
     }
     .screen{
         min-width: unset;
+        height: calc(100vh - 100px);
+    }
+    .main_game{
+        justify-content: space-evenly;
     }
 }
