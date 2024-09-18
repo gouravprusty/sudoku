@@ -345,9 +345,17 @@ nav{
     }
     .screen{
         min-width: unset;
-        height: calc(100vh - 100px);
     }
     .main_game{
-        justify-content: space-evenly;
+        justify-content: flex-start;
+    }
+    .main_sudoku_grid{
+        margin-bottom: 20px;
+    }
+    .main_game_info_time{
+        margin-bottom: 0;
+    }
+    .numbers {
+        margin-top: 30px;
     }
 }
