@@ -81,13 +81,13 @@ nav{
     font-size: var(--font-size-lg);
     cursor: pointer;
 }
-.fa-sun{
+.fa-lightbulb{
     display: none;
 }
 .fa-moon{
     display: inline-block;
 }
-.dark .fa-sun{
+.dark .fa-lightbulb{
     display: inline-block;
 }
 .dark .fa-moon{
@@ -201,7 +201,7 @@ nav{
     border: 2px solid var(--blue);
 }
 .main_grid_cell.hover{
-    border: 3px solid var(--blue);
+    border: 2px solid var(--blue);
 }
 .dark.main_grid_cell.hover{
     border: 1px solid var(--blue);
@@ -267,8 +267,14 @@ nav{
     background-color: var(--red);
     border-radius: var(--border-radius);
     color: var(--white);
+    height: var(--cell-size);
+    display: grid;
+    place-items: center;
+    font-size: var(--font-size);
+    cursor: pointer;
 }
-.pause_screen{
+.pause_screen,
+.result_screen{
     position: absolute;
     top: 0;
     left: 0;
@@ -280,16 +286,64 @@ nav{
     display: none;
     flex-direction: column;
 }
-.pause_screen.active{
+.pause_screen.active,
+.result_screen.active{
     display: flex;
 }
-.pause_screen > * + *{
+.pause_screen > * + *,
+.result_screen > * + *{
     margin-top: 20px;
+}
+.result_screen.active div{
+    animation: zoomIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 .pause_screen.active .btn{
     animation: zoomIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
+.result_screen .congrat{
+    font-size: var(--font-size-xl);
+    color: var(--blue);
+}
+.result_screen .info{
+    color: var(--text-color);
+    font-size: var(--font-size);
+}
+.result_time{
+    color: var(--blue);
+    font-size: var(--font-size-xl);
+}
+.ZoomIn{
+    animation: zoomIn .5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
 @keyframes zoomIn {
     0%{transform: scale(3);}
     100%{transform: scale(1);}
+}
+.cell_err{
+    animation: zoomOutShake .5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+@keyframes zoomOutShake{
+    0%{transform: scale(2);}
+    25%{transform: scale(2) rotate(30deg);}
+    50%{transform: scale(2) rotate(-30deg);}
+    100%{transform: scale(1);}
+}
+@media only screen and (max-width: 767px){
+    :root{
+        --nav-size: 50px;
+        --cell-size: 30px;
+        --border-radius: 5px;
+        --space-y: 10px;
+        --gap: 2px;
+        --font-size:1rem;
+        --font-size-lg: 1.5rem;
+        --font-size-xl: 2rem;
+    }
+    .input_name,
+    .btn{
+        height: 50px;
+    }
+    .screen{
+        min-width: unset;
+    }
 }

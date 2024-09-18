@@ -9,12 +9,17 @@ const levelBtn = document.querySelector("#btn_level");
 const pauseBtn = document.querySelector(".pause_btn");
 const resumeBtn = document.querySelector("#resume");
 const newGame = document.querySelector("#new_game")
+const newGame2 = document.querySelector(".new_game2")
+const deleteBtn = document.querySelector(".delete_btn")
+const resultTime = document.querySelector(".result_time")
 // Inputs
 const playerName = document.querySelector(".input_name");
+const numInput = document.querySelectorAll(".number");
 // Screens
 const startScreen = document.querySelector(".start_screen");
 const gameScreen = document.querySelector(".main_game");
 const pauseScreen = document.querySelector(".pause_screen");
+const resultScreen = document.querySelector(".result_screen");
 // Components
 const cells = document.querySelectorAll(".main_grid_cell");
 const player_name = document.querySelector("#player_name");
@@ -27,6 +32,7 @@ let seconds = 0;
 
 let su = undefined;
 let su_ans = undefined;
+let selected_cell = -1;
 
 // Toggle dark mode on button click
 toggleTheme.addEventListener("click", () => {
@@ -69,9 +75,11 @@ const clearSudoku = () => {
 
 const initSudoku = () => {
     clearSudoku();
+    resetBg();
     su = generateSudoku(level);
     su_ans = [...su.question];
-    console.table(su_ans);
+    seconds = 0;
+    saveGameInfo();
     for (let i = 0; i < Math.pow(CONSTANT.GRID_SIZE, 2); i++) {
         let row = Math.floor(i/CONSTANT.GRID_SIZE);
         let col = i%CONSTANT.GRID_SIZE;
@@ -83,6 +91,27 @@ const initSudoku = () => {
     }
 };
 
+const loadSudoku = () => {
+    let game = getGameInfo();
+    game_level.innerHTML = CONSTANT.LEVEL_NAME[game_level];
+    su = game.su;
+    su_ans = su.answer;
+    seconds = game.seconds;
+    game_time.innerHTML = showTime(seconds);
+    levelIndex = game.level;
+
+    for (let i = 0; i < Math.pow(CONSTANT.GRID_SIZE, 2); i++) {
+        let row = Math.floor(i/CONSTANT.GRID_SIZE);
+        let col = i%CONSTANT.GRID_SIZE;
+        cells[i].setAttribute("data-value", su_ans[row][col]);
+        cells[i].innerHTML = su_ans[row][col] !== 0 ? su_ans[row][col] : "";
+
+        if(su.question[row][col] !== 0){
+            cells[i].classList.add("filled");
+        }
+    }
+}
+
 const hoverBg = (index) => {
     let row = Math.floor(index / CONSTANT.GRID_SIZE);
     let col = index % CONSTANT.GRID_SIZE;
@@ -91,7 +120,7 @@ const hoverBg = (index) => {
     for (let i = 0; i < CONSTANT.BOX_SIZE; i++) {
         for (let j = 0; j < CONSTANT.BOX_SIZE; j++) {
             let cell = cells[9 * (box_start_row + i) + (box_start_col + j)];
-            cells.classList.add("hover");
+            cell.classList.add("hover");
         }
     }
     let step = 9;
@@ -112,13 +141,129 @@ const hoverBg = (index) => {
     step = 1;
     while(index + step < 9*row  + 9){
         cells[index + step].classList.add("hover");
-        step += 9;
+        step += 1;
     }
 }
 const resetBg = () => {
     cells.forEach(e => e.classList.remove("hover"));
 }
 
+const checkErr = (value) => {
+    const addErr = (cell) => {
+        if(parseInt(cell.getAttribute("data-value")) === value){
+            cell.classList.add("err");
+            cell.classList.add("cell_err");
+            setTimeout(() => {
+                cell.classList.remove("cell_err");
+            }, 500);
+        }
+    }
+    let index = selected_cell;
+
+    let row = Math.floor(index / CONSTANT.GRID_SIZE);
+    let col = index % CONSTANT.GRID_SIZE;
+    let box_start_row = row - row % 3;
+    let box_start_col = col - col % 3;
+    for (let i = 0; i < CONSTANT.BOX_SIZE; i++) {
+        for (let j = 0; j < CONSTANT.BOX_SIZE; j++) {
+            let cell = cells[9 * (box_start_row + i) + (box_start_col + j)];
+            if(!cell.classList.contains("selected")) addErr(cell);
+        }
+    }
+    let step = 9;
+    while(index - step >= 0){
+        addErr(cells[index - step]);
+        step += 9;
+    }
+    step = 9;
+    while(index + step < 81){
+        addErr(cells[index + step]);
+        step += 9;
+    }
+    step = 1;
+    while(index - step >= 9*row){
+        addErr(cells[index - step]);
+        step += 1;
+    }
+    step = 1;
+    while(index + step < 9*row  + 9){
+        addErr(cells[index + step]);
+        step += 1;
+    }
+
+};
+
+const removeErr = () => cells.forEach(e => e.classList.remove('err'));
+
+const saveGameInfo = () => {
+    let game = {
+        level: levelIndex,
+        seconds: seconds,
+        su: {
+            original: su.original,
+            question: su.question,
+            answer: su_ans
+        }
+    }
+    localStorage.setItem("game", JSON.stringify(game));
+}
+
+const removeGameInfo = () => {
+    localStorage.removeItem("game");
+    continueBtn.style.display = "none";
+}
+
+const isGameWin = () => sudokuCheck(su_ans);
+
+const showResult = () => {
+    clearInterval(timer);
+    resultScreen.classList.add("active");
+    resultTime.innerHTML = showTime(seconds);
+}
+
+const initNumInputEvent = () => {
+    numInput.forEach((e, index) => {
+        e.addEventListener('click', () => {
+            if(!cells[selected_cell].classList.contains("filled")){
+                cells[selected_cell].innerHTML = index + 1;
+                cells[selected_cell].setAttribute("data-value", index + 1);
+
+                let row = Math.floor(selected_cell / CONSTANT.GRID_SIZE);
+                let col = selected_cell % CONSTANT.GRID_SIZE;
+                su_ans[row][col] = index + 1;
+
+                saveGameInfo();
+
+                removeErr();
+                checkErr(index + 1);
+                cells[selected_cell].classList.add("zoom_in");
+                setTimeout(() => {
+                    cells[selected_cell].classList.remove("zoom_in");
+                }, 500);
+
+                if(isGameWin()){
+                    removeGameInfo();
+                    showResult();
+                }
+            }
+        })
+    })
+};
+
+const initCellsEvent = () => {
+    cells.forEach((e, index) => {
+        e.addEventListener("click", () => {
+            if(!e.classList.contains("filled")){
+                cells.forEach(e => e.classList.remove("selected"));
+                selected_cell = index;
+                e.classList.remove("err");
+                e.classList.add("selected");
+                resetBg();
+                hoverBg(index);
+            }
+        })
+    });
+}
 const startGame = () => {
     startScreen.classList.remove("active");
     gameScreen.classList.add("active");
@@ -142,11 +287,25 @@ const returnStartScreen = () => {
     startScreen.classList.add("active");
     gameScreen.classList.remove("active");
     pauseScreen.classList.remove("active");
+    resultScreen.classList.remove("active");
 }
 
 playBtn.addEventListener("click", () => {
     if(playerName.value.trim().length > 0){
         initSudoku();
+        startGame();
+    }else{
+        playerName.classList.add("input_err");
+        setTimeout(() => {
+            playerName.classList.remove("input_err");
+            playerName.focus();
+        }, 500);
+    }
+});
+
+continueBtn.addEventListener("click", () => {
+    if(playerName.value.trim().length > 0){
+        loadSudoku();
         startGame();
     }else{
         playerName.classList.add("input_err");
@@ -182,6 +341,19 @@ resumeBtn.addEventListener("click", () => {
 newGame.addEventListener("click", () => {
     returnStartScreen();
 });
+newGame2.addEventListener("click", () => {
+    console.log("object");
+    returnStartScreen();
+});
+
+deleteBtn.addEventListener("click", () => {
+    cells[selected_cell].innerHTML = "";
+    cells[selected_cell].setAttribute("data-value", 0);
+    let row = Math.floor(selected_cell / CONSTANT.GRID_SIZE);
+    let col = selected_cell % CONSTANT.GRID_SIZE;
+    su_ans[row][col] = 0;
+    removeErr();
+})
 
 function init() {
     const darkmode = JSON.parse(localStorage.getItem("darkmode"));
@@ -196,6 +368,8 @@ function init() {
     continueBtn.style.display = game ? "grid" : "none";
 
     initGameGrid();
+    initCellsEvent();
+    initNumInputEvent();
 
     if(getPlayerName()){
         playerName.value = getPlayerName();
