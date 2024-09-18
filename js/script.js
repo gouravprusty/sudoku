@@ -6,11 +6,15 @@ const themeColor = document.querySelector("meta[name='theme-color']");
 const continueBtn = document.querySelector("#btn_continue");
 const playBtn = document.querySelector("#btn_play");
 const levelBtn = document.querySelector("#btn_level");
+const pauseBtn = document.querySelector(".pause_btn");
+const resumeBtn = document.querySelector("#resume");
+const newGame = document.querySelector("#new_game")
 // Inputs
 const playerName = document.querySelector(".input_name");
 // Screens
 const startScreen = document.querySelector(".start_screen");
 const gameScreen = document.querySelector(".main_game");
+const pauseScreen = document.querySelector(".pause_screen");
 // Components
 const cells = document.querySelectorAll(".main_grid_cell");
 const player_name = document.querySelector("#player_name");
@@ -18,6 +22,11 @@ const game_level = document.querySelector("#game_level");
 const game_time = document.querySelector("#game_time");
 
 let timer = null;
+let pause = false;
+let seconds = 0;
+
+let su = undefined;
+let su_ans = undefined;
 
 // Toggle dark mode on button click
 toggleTheme.addEventListener("click", () => {
@@ -48,11 +57,22 @@ levelBtn.addEventListener("click", (e) => {
 const setPlayerName = (name) => localStorage.setItem("player_name", name);
 const getPlayerName = () => localStorage.getItem("player_name")
 
+const showTime = (seconds) => new Date(seconds * 1000).toISOString().substr(11, 8);
+
+const initSudoku = () => {
+    su = generateSudoku(level);
+    su_ans = [...su.question];
+    console.table(su_ans);
+};
+
 const startGame = () => {
     startScreen.classList.remove("active");
     gameScreen.classList.add("active");
     player_name.innerText = playerName.value.trim();
     setPlayerName(playerName.value.trim());
+    game_level.innerText = CONSTANT.LEVEL_NAME[levelIndex];
+    seconds = 0;
+    showTime(seconds);
     timer = setInterval(() => {
         if(!pause){
             seconds = seconds + 1
@@ -61,8 +81,18 @@ const startGame = () => {
     }, 1000);
 };
 
+const returnStartScreen = () => {
+    clearInterval(timer);
+    pause = false;
+    seconds = 0;
+    startScreen.classList.add("active");
+    gameScreen.classList.remove("active");
+    pauseScreen.classList.remove("active");
+}
+
 playBtn.addEventListener("click", () => {
     if(playerName.value.trim().length > 0){
+        initSudoku();
         startGame();
     }else{
         playerName.classList.add("input_err");
@@ -87,6 +117,18 @@ const initGameGrid = () => {
     }
 };
 
+pauseBtn.addEventListener("click", () => {
+    pauseScreen.classList.add("active");
+    pause = true;
+});
+resumeBtn.addEventListener("click", () => {
+    pauseScreen.classList.remove("active");
+    pause = false;
+});
+newGame.addEventListener("click", () => {
+    returnStartScreen();
+});
+
 function init() {
     const darkmode = JSON.parse(localStorage.getItem("darkmode"));
     if (darkmode) {
@@ -100,5 +142,11 @@ function init() {
     continueBtn.style.display = game ? "grid" : "none";
 
     initGameGrid();
+
+    if(getPlayerName()){
+        playerName.value = getPlayerName();
+    }else{
+        playerName.focus();
+    }
 }
 init();

@@ -268,3 +268,28 @@ nav{
     border-radius: var(--border-radius);
     color: var(--white);
 }
+.pause_screen{
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-color: var(--body-bg);
+    align-items: center;
+    justify-content: center;
+    display: none;
+    flex-direction: column;
+}
+.pause_screen.active{
+    display: flex;
+}
+.pause_screen > * + *{
+    margin-top: 20px;
+}
+.pause_screen.active .btn{
+    animation: zoomIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+@keyframes zoomIn {
+    0%{transform: scale(3);}
+    100%{transform: scale(1);}
+}
